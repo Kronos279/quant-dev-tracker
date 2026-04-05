@@ -1375,7 +1375,18 @@ function tTog(pid, idx, el) {
   const tcEl = document.getElementById('tc-'+pid);
   if (ccEl) ccEl.textContent = cc;
   if (tcEl) tcEl.textContent = `${cc}/${p.topics.length}`;
-  renderStats(); updHdr();
+
+  // Auto-update progress bar based on checkbox completion
+  const newProgress = Math.round((cc / p.topics.length) * 100);
+  sP(pid, newProgress);
+  const pvEl = document.getElementById('pv-'+pid);
+  if (pvEl) {
+    pvEl.textContent = newProgress + '%';
+    const slider = pvEl.parentElement.querySelector('input');
+    if (slider) slider.value = newProgress;
+  }
+
+  renderSB(); renderSK(); renderStats(); updHdr(); renderTL();
 }
 
 // ═══════════════════════════════════════════════════════════════
