@@ -218,25 +218,87 @@ const SKILL_DEFS = [
 // ═══════════════════════════════════════════════════════════════
 
 const LEARNING_MATERIALS = {
-  // Phase 1: Math Foundations
+  // Phase 1: Math Foundations - Comprehensive
   "1-0": {
-    title: "Linear Algebra - Vectors, Matrices, Transforms",
-    explanation: `<strong>Linear algebra</strong> is the foundation of all quantitative finance. Every asset return, covariance matrix, and factor model is built on linear algebra operations. In quant finance, matrices represent portfolios, correlations, and transformations of data.</p>
-    <p><strong>Vectors</strong> are ordered collections of numbers representing points in n-dimensional space. In finance, a portfolio's returns across assets form a vector.</p>
-    <p><strong>Matrices</strong> are 2D arrays that represent linear transformations or collections of vectors. The covariance matrix, showing how asset returns co-move, is central to portfolio theory.</p>
-    <p><strong>Transforms</strong> like rotations, scaling, and projections change vector spaces in predictable ways. PCA uses these to reduce dimensionality while preserving variance.</p>`,
+    title: "Linear Algebra: Vectors, Matrices, and Linear Transformations",
+    explanation: `<h2>What is Linear Algebra?</h2>
+<p><strong>Linear algebra</strong> is the mathematics of linear relationships between variables. It provides the language and tools to work with high-dimensional data efficiently — essential for quantitative finance where we routinely deal with thousands of assets, factors, and time series.</p>
+
+<h3>Why It Matters in Finance</h3>
+<p>Every quantitative model ultimately reduces to linear algebra operations:</p>
+<ul>
+<li><strong>Portfolio returns</strong> are dot products: portfolio_return = Σ(weight_i × return_i)</li>
+<li><strong>Covariance matrices</strong> describe how assets co-move — the foundation of risk management</li>
+<li><strong>Factor models</strong> (Fama-French) express returns as linear combinations of factor exposures</li>
+<li><strong>PCA</strong> finds principal components by computing eigenvectors of the covariance matrix</li>
+<li><strong>Linear regression</strong> (OLS) is solved using matrix inverses: β = (X'X)^(-1) X'y</li>
+</ul>
+
+<h3>Vectors: Points in N-Dimensional Space</h3>
+<p>A vector is an ordered list of numbers. In finance, a portfolio's holdings across N assets is a vector in R^N:</p>
+<pre>w = [w₁, w₂, ..., w_N]ᵀ  // portfolio weights
+r = [r₁, r₂, ..., r_N]ᵀ  // asset returns</pre>
+
+<p>The <strong>dot product</strong> (inner product) gives portfolio return:</p>
+<pre>r_portfolio = w · r = Σᵢ wᵢ rᵢ = w₁r₁ + w₂r₂ + ... + w_N r_N</pre>
+
+<h3>Matrices: Collections of Vectors</h3>
+<p>A matrix is a 2D array. Key matrix types in finance:</p>
+<ul>
+<li><strong>Data matrix X</strong>: n observations × k features (e.g., n days of returns for k assets)</li>
+<li><strong>Covariance matrix Σ</strong>: k×k symmetric matrix where Σᵢⱼ = Cov(rᵢ, rⱼ)</li>
+<li><strong>Correlation matrix</strong>: normalized version where off-diagonals are correlations</li>
+<li><strong>Payoff matrix</strong>: describes option payoffs at different stock prices</li>
+</ul>
+
+<h3>Matrix Operations</h3>
+<p><strong>Matrix multiplication</strong>: (A×B)ᵢⱼ = Σₖ Aᵢₖ Bₖⱼ</p>
+<p><strong>Critical property</strong>: Matrix multiplication is NOT commutative. A×B ≠ B×A in general!</p>
+<p><strong>Transpose</strong>: Aᵀ flips rows and columns</p>
+<p><strong>Inverse</strong>: A^(-1) satisfies A×A^(-1) = I (identity)</p>
+<p><strong>Determinant</strong>: |A| — nonzero only for invertible (full-rank) matrices</p>
+
+<h3>Linear Transformations</h3>
+<p>A matrix A applied to vector x (A×x) transforms x linearly:</p>
+<ul>
+<li><strong>Rotation</strong>: rotating data in PCA</li>
+<li><strong>Scaling</strong>: standardizing variables to unit variance</li>
+<li><strong>Projection</strong>: projecting data onto principal components</li>
+</ul>
+
+<h3>Key Theorems</h3>
+<ul>
+<li><strong>Spectral theorem</strong>: symmetric matrices have real eigenvalues and orthogonal eigenvectors</li>
+<li><strong>Positive semi-definite</strong>: covariance matrices satisfy x'Σx ≥ 0 for all x</li>
+<li><strong>Matrix inequality</strong>: for covariance Σ: Var(w'x) = w'Σw</li>
+</ul>
+
+<h3>Portfolio Theory Application</h3>
+<p>Mean-variance optimization uses linear algebra extensively:</p>
+<pre>Expected Return: μₚ = w'μ
+Portfolio Variance: σₚ² = w'Σw</pre>
+<p>The minimum variance portfolio solves: min_w w'Σw subject to Σwᵢ = 1</p>`,
     keyPoints: [
       "Matrix multiplication is NOT commutative: AB ≠ BA in general",
       "Eigenvalues tell you about the 'stretching' behavior of a matrix",
       "A covariance matrix is always symmetric and positive semi-definite",
       "Matrix inverses exist only for full-rank matrices",
-      "The determinant tells you about volume scaling and matrix invertibility"
+      "The determinant tells you about volume scaling and matrix invertibility",
+      "Portfolio variance = w'Σw where w is weights and Σ is covariance",
+      "Positive semi-definite means x'Σx ≥ 0 for all vectors x",
+      "The identity matrix I acts like 1: AI = IA = A"
     ],
     formula: `// Portfolio return as dot product
 r_portfolio = w · r = Σ(wᵢ × rᵢ)
 
 // Covariance matrix definition
-Σᵢⱼ = Cov(rᵢ, rⱼ) = E[(rᵢ - μᵢ)(rⱼ - μⱼ)]`,
+Σᵢⱼ = Cov(rᵢ, rⱼ) = E[(rᵢ - μᵢ)(rⱼ - μⱼ)]
+
+// OLS solution (matrix form)
+β = (X'X)⁻¹X'y
+
+// Portfolio variance
+σ²ₚ = w'Σw = ΣᵢΣⱼ wᵢwⱼΣᵢⱼ`,
     python: `import numpy as np
 
 # Portfolio return
@@ -244,59 +306,171 @@ weights = np.array([0.3, 0.5, 0.2])
 returns = np.array([0.08, 0.12, -0.03])
 portfolio_return = np.dot(weights, returns)
 
-# Covariance matrix
-cov_matrix = np.cov(returns)  # 3x3 matrix
+# Covariance matrix (3 assets, 5 years of monthly data)
+data = np.array([
+    [0.05, 0.08, 0.03],
+    [-0.02, 0.01, 0.04],
+    [0.03, -0.01, 0.02],
+    [0.07, 0.09, 0.01],
+    [-0.01, 0.04, -0.02]
+])
+cov_matrix = np.cov(data.T)  # Transpose because np.cov expects rows=variables
 
 # Matrix operations
-eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)`,
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+C = np.dot(A, B)  # Matrix multiplication
+A_inv = np.linalg.inv(A)  # Matrix inverse
+eigenvalues, eigenvectors = np.linalg.eig(A)  # Eigendecomposition
+
+# Portfolio variance calculation
+n_assets = 3
+w = np.array([0.4, 0.4, 0.2])  # Weights
+Sigma = cov_matrix
+portfolio_variance = np.dot(w, np.dot(Sigma, w))
+portfolio_std = np.sqrt(portfolio_variance)`,
     videos: [
-      { title: "3Blue1Brown - Linear Algebra Essence", query: "3Blue1Brown linear algebra essence vectors" },
+      { title: "3Blue1Brown - Linear Algebra Essence", query: "3Blue1Brown linear algebra essence vectors matrices" },
       { title: "MIT 18.06 - Vectors and Matrices", query: "MIT 18.06 Gilbert Strang vectors matrices" }
     ],
     resources: [
       { name: "Mathematics for Machine Learning (Free PDF)", url: "https://mml-book.github.io/" },
-      { name: "Khan Academy - Linear Algebra", url: "https://www.khanacademy.org/math/linear-algebra" }
+      { name: "Khan Academy - Linear Algebra", url: "https://www.khanacademy.org/math/linear-algebra" },
+      { name: "Immersive Linear Algebra (Interactive)", url: "http://immersivemath.com/ila/index.html" }
     ]
   },
+
   "1-1": {
     title: "Eigendecomposition & SVD",
-    explanation: `<strong>Eigendecomposition</strong> breaks a matrix into its fundamental building blocks: eigenvectors (directions that don't change direction when the matrix is applied) and eigenvalues (how much it stretches in those directions).</p>
-    <p>In finance, PCA uses eigendecomposition of the covariance matrix to find the principal components - the directions of maximum variance in your data.</p>
-    <p><strong>SVD (Singular Value Decomposition)</strong> generalizes eigendecomposition to non-square matrices. It's more numerically stable and always exists. Used in recommender systems, dimensionality reduction, and solving linear systems.</p>`,
+    explanation: `<h2>Eigendecomposition: Breaking Matrices into Fundamental Components</h2>
+
+<h3>The Core Idea</h3>
+<p>Every square matrix A can be decomposed into <strong>eigenvectors</strong> (directions that don't change when A is applied) and <strong>eigenvalues</strong> (how much A stretches in those directions):</p>
+<pre>A × v = λ × v</pre>
+<p>Where v is an eigenvector and λ is its eigenvalue.</p>
+
+<h3>Why Eigenvectors Matter</h3>
+<p>When you multiply matrix A by eigenvector v, the result is just a scaled version of v — the direction doesn't change, only the length (by factor λ).</p>
+
+<h3>Financial Applications</h3>
+<ul>
+<li><strong>PCA (Principal Component Analysis)</strong>: eigenvectors of the covariance matrix are the principal components — orthogonal directions of maximum variance</li>
+<li><strong>Markov Chains</strong>: stationary distributions are eigenvectors with eigenvalue 1</li>
+<li><strong>Google PageRank</strong>: the dominant eigenvector gives page importance rankings</li>
+<li><strong>Factor Models</strong>: eigenvectors represent factor exposures</li>
+</ul>
+
+<h3>Eigendecomposition Formula</h3>
+<pre>A = V × Λ × V⁻¹
+
+Where:
+V = matrix whose columns are eigenvectors [v₁, v₂, ..., vₙ]
+Λ = diagonal matrix with eigenvalues [λ₁, λ₂, ..., λₙ] on diagonal</pre>
+
+<h3>Properties of Eigenvalues</h3>
+<ul>
+<li><strong>Trace</strong>: Σᵢ λᵢ = trace(A) = sum of diagonal elements</li>
+<li><strong>Determinant</strong>: Πᵢ λᵢ = det(A)</li>
+<li><strong>Symmetric matrices</strong>: eigenvalues are always REAL (never complex)</li>
+<li><strong>Positive semi-definite</strong>: all eigenvalues ≥ 0</li>
+<li><strong>Orthogonal eigenvectors</strong>: for symmetric matrices, eigenvectors are orthogonal</li>
+</ul>
+
+<h3>SVD: Generalization to Non-Square Matrices</h3>
+<p>Unlike eigendecomposition (requires square matrix), <strong>Singular Value Decomposition</strong> works for ANY matrix:</p>
+<pre>A = U × Σ × Vᵀ
+
+Where:
+U = m×m orthogonal matrix (left singular vectors)
+Σ = m×n diagonal matrix of singular values (σ₁ ≥ σ₂ ≥ ... ≥ 0)
+Vᵀ = n×n orthogonal matrix (right singular vectors, transposed)</pre>
+
+<h3>Key SVD Properties</h3>
+<ul>
+<li><strong>Always exists</strong>: unlike eigendecomposition, SVD works for all matrices</li>
+<li><strong>Numerically stable</strong>: preferred over direct matrix inversion</li>
+<li><strong>Rank</strong>: number of non-zero singular values = rank(A)</li>
+<li><strong>Low-rank approximation</strong>: truncating SVD to k singular values gives best k-rank approximation (Eckart-Young theorem)</li>
+</ul>
+
+<h3>Relationship Between Eigendecomposition and SVD</h3>
+<p>For a symmetric positive semi-definite matrix A:</p>
+<pre>Eigenvalues of A = squared singular values of A
+Eigenvectors of A = right singular vectors of A</pre>
+
+<h3>Practical Use: PCA via SVD</h3>
+<pre># Instead of computing covariance then eigendecomposition:
+# X_centered = X - mean(X)
+# U, S, Vt = svd(X_centered)
+# principal_components = Vt.T[:, :k]</pre>
+<p>SVD is more numerically stable than direct eigendecomposition of X'X.</p>`,
     keyPoints: [
-      "Covariance matrices are symmetric, so eigenvalues are always real (never complex)",
-      "SVD is numerically more stable than direct eigendecomposition",
-      "The number of non-zero singular values equals the rank of the matrix",
-      "PCA projects data onto eigenvectors of the covariance matrix",
-      "Truncating SVD gives optimal low-rank approximation (by Frobenius norm)"
+      "Eigenvalue equation: A×v = λ×v — applying A to eigenvector v just scales it",
+      "Eigenvectors of symmetric matrices are orthogonal (perpendicular to each other)",
+      "Covariance matrices are symmetric positive semi-definite: all eigenvalues ≥ 0",
+      "SVD works for any matrix; eigendecomposition only for square matrices",
+      "Truncated SVD gives optimal low-rank approximation (Eckart-Young theorem)",
+      "PCA = eigendecomposition of covariance = SVD of centered data matrix",
+      "Trace(A) = sum of eigenvalues; det(A) = product of eigenvalues",
+      "SVD is more numerically stable than direct eigendecomposition"
     ],
     formula: `// Eigendecomposition
-A = V × Λ × V⁻¹
-Where V = eigenvectors, Λ = diagonal eigenvalues
+A = V Λ V⁻¹
+Where V = [v₁, v₂, ...] (eigenvectors), Λ = diag(λ₁, λ₂, ...)
 
-// SVD
-A = U × Σ × Vᵀ
-Where U, V are orthogonal, Σ is diagonal singular values`,
+// SVD (any matrix)
+A = U Σ Vᵀ
+Where U, V are orthogonal, Σ has singular values σ₁ ≥ σ₂ ≥ ... ≥ 0
+
+// PCA connection
+Cov(X) = V Λ Vᵀ  (eigenvectors = principal components)
+// Or via SVD:
+X = U Σ Vᵀ  →  principal_components = V`,
     python: `import numpy as np
-
-A = np.array([[3, 1], [1, 2]])
+from sklearn.decomposition import PCA
 
 # Eigendecomposition
+A = np.array([[3, 1], [1, 2]])
 eigenvalues, eigenvectors = np.linalg.eig(A)
+print(f"Eigenvalues: {eigenvalues}")
+print(f"Eigenvectors (columns):\n{eigenvectors}")
 
-# SVD
-U, singular_values, Vt = np.linalg.svd(A)
+# SVD (works for any matrix)
+B = np.array([[1, 2, 3], [4, 5, 6]])
+U, singular_values, Vt = np.linalg.svd(B)
+print(f"Singular values: {singular_values}")
 
-# PCA using eigendecomposition of covariance
-cov = np.cov(data.T)
-eigenvalues, eigenvectors = np.linalg.eig(cov)
-principal_components = eigenvectors[:, :k]`,
+# PCA via eigendecomposition of covariance
+X = np.random.randn(100, 5)  # 100 samples, 5 features
+X_centered = X - X.mean(axis=0)
+cov_matrix = np.cov(X_centered.T)
+eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+# Sort by eigenvalue descending
+idx = np.argsort(eigenvalues)[::-1]
+eigenvalues = eigenvalues[idx]
+eigenvectors = eigenvectors[:, idx]
+# Top k components
+k = 2
+principal_components = eigenvectors[:, :k]
+
+# PCA via SVD (more stable)
+U, S, Vt = np.linalg.svd(X_centered)
+principal_components_svd = Vt.T[:, :k]
+print(f"Components match: {np.allclose(principal_components, principal_components_svd)}")
+
+# sklearn PCA
+pca = PCA(n_components=2)
+pca.fit(X)
+print(f"Explained variance ratio: {pca.explained_variance_ratio_}")`,
     videos: [
       { title: "Eigendecomposition & PCA Explained", query: "eigenvectors eigenvalues PCA explained" },
-      { title: "SVD Intuition", query: "singular value decomposition SVD intuition" }
+      { title: "SVD Intuition", query: "singular value decomposition SVD intuition" },
+      { title: "PCA Math Explained", query: "PCA principal component analysis mathematics derivation" }
     ],
     resources: [
-      { name: "PCA Tutorial - Sebastian Raschka", url: "https://sebastianraschka.com/Articles/2014_pca.html" }
+      { name: "PCA Tutorial - Sebastian Raschka", url: "https://sebastianraschka.com/Articles/2014_pca.html" },
+      { name: "Eigendecomposition - Khan Academy", url: "https://www.khanacademy.org/math/linear-algebra/alternate-bases/eigen-everything" },
+      { name: "SVD Tutorial", url: "https://web.mit.edu/18.06/www/Spring09/EigenSystems/EigenSystems.pdf" }
     ]
   },
   "1-2": {
@@ -423,15 +597,67 @@ gamma = hessian(black_scholes_call, argnums=0)`,
     ]
   },
   "1-5": {
-    title: "Constrained Optimisation - Lagrangian",
-    explanation: `<strong>Lagrangian multipliers</strong> solve constrained optimization problems. In quant finance, this is essential for portfolio optimization (maximize return subject to risk constraint), Black-Scholes derivation, and mean-variance optimization.</p>
-    <p>The key insight: at the optimum of a constrained problem, the gradient of the objective is parallel to the gradient of the constraint.</p>`,
+    title: "Constrained Optimization: Lagrangian & KKT Conditions",
+    explanation: `<h2>Why Constrained Optimization?</h2>
+<p>Unconstrained optimization finds minima/maxima without restrictions. But in finance, constraints are everywhere:</p>
+<ul>
+<li><strong>Budget constraint</strong>: portfolio weights must sum to 1 (Σwᵢ = 1)</li>
+<li><strong>No short selling</strong>: wᵢ ≥ 0 for all assets</li>
+<li><strong>Risk limit</strong>: portfolio variance must be ≤ σ²_max</li>
+<li><strong>Tracking error</strong>: portfolio must stay within δ of benchmark weights</li>
+</ul>
+
+<h3>The Lagrangian Method</h3>
+<p>The <strong>Lagrangian</strong> converts a constrained problem into an unconstrained one by adding penalty terms:</p>
+<pre>Original: min f(x)
+         s.t. g(x) = 0
+
+Lagrangian: L(x, λ) = f(x) + λᵀg(x)
+Where λ (lambda) are Lagrange multipliers</pre>
+
+<h3>Intuition</h3>
+<p>At the optimum, the gradient of the objective function is parallel to the gradient of the constraint. Think of it like a ball on a slope — it rolls downhill until it hits the constraint boundary, where the downhill direction is tangent to the constraint.</p>
+<pre>∇f = -λ ∇g    or    ∇f + λ∇g = 0</pre>
+
+<h3>Geometric Interpretation</h3>
+<p>Picture contour lines of f(x) (curves of constant value) and the constraint g(x) = 0. The optimum occurs where a contour is tangent to the constraint — where their gradients are parallel.</p>
+
+<h3>KKT Conditions: Generalization</h3>
+<p>The <strong>Karush-Kuhn-Tucker (KKT)</strong> conditions extend Lagrange multipliers to inequality constraints:</p>
+<pre>min f(x)
+s.t. gᵢ(x) = 0  (equality constraints)
+     hⱼ(x) ≤ 0   (inequality constraints)</pre>
+
+<p>KKT conditions at optimum:</p>
+<ol>
+<li><strong>Stationarity</strong>: ∇f + Σ λᵢ∇gᵢ + Σ μⱼ∇hⱼ = 0</li>
+<li><strong>Primal feasibility</strong>: gᵢ(x*) = 0, hⱼ(x*) ≤ 0</li>
+<li><strong>Dual feasibility</strong>: μⱼ ≥ 0</li>
+<li><strong>Complementary slackness</strong>: μⱼ × hⱼ(x*) = 0</li>
+</ol>
+
+<h3>Shadow Prices</h3>
+<p>The Lagrange multiplier λ tells you the <strong>sensitivity</strong> of the optimum to a constraint change:</p>
+<pre>df*/d(constraint_bound) ≈ λ</pre>
+<p>For portfolio optimization: if λ is small, the constraint barely affects the optimum.</p>
+
+<h3>Portfolio Optimization Example</h3>
+<pre>min w'Σw          // minimize variance
+s.t. w'μ = rₜ     // achieve target return
+     w'1 = 1       // weights sum to 1
+
+L = w'Σw + λ₁(rₜ - w'μ) + λ₂(1 - w'1)</pre>
+
+<h3>Convex Optimization</h3>
+<p>When f is <strong>convex</strong> and constraints form a convex set, any local optimum is also global. Mean-variance optimization is convex (Σ is positive semi-definite).</p>`,
     keyPoints: [
-      "The Lagrangian combines objective and constraints with multipliers",
-      "KKT conditions generalize Lagrange multipliers to inequality constraints",
-      "At optimum: ∇f = λ∇g (gradients are parallel)",
-      "The multiplier λ tells you the sensitivity to constraint changes",
-      "Equality constraints: L(x, λ) = f(x) + λg(x)"
+      "Lagrangian: L(x, λ) = f(x) + λᵀg(x) converts constrained to unconstrained",
+      "At optimum: gradients of objective and constraint are parallel (∇f = λ∇g)",
+      "KKT conditions extend Lagrange multipliers to inequality constraints",
+      "λ (multiplier) = shadow price = sensitivity of optimum to constraint change",
+      "Complementary slackness: μⱼ × hⱼ(x*) = 0 means inactive constraints have μ = 0",
+      "Convex optimization: local optimum = global optimum",
+      "scipy.optimize.minimize with SLSQP handles equality and inequality constraints"
     ],
     formula: `// Constrained problem
 min f(x)
@@ -440,65 +666,142 @@ s.t. g(x) = 0
 // Lagrangian
 L(x, λ) = f(x) + λᵀg(x)
 
-// KKT conditions at optimum
-∇L = ∇f + λᵀ∇g = 0
-g(x) = 0`,
-    python: `from scipy.optimize import minimize
-import numpy as np
+// KKT Stationarity
+∇f + Σ λᵢ∇gᵢ + Σ μⱼ∇hⱼ = 0
 
-# Portfolio optimization example
-def portfolio_return(w, mean_returns):
-    return -np.dot(w, mean_returns)  # Negative for minimization
+// Shadow price interpretation
+df*/d(bound) ≈ λ
 
-def portfolio_risk(w, cov):
-    return np.sqrt(w @ cov @ w)
+// Portfolio optimization (mean-variance)
+min w'Σw
+s.t. w'μ = r_target
+     w'1 = 1`,
+    python: `import numpy as np
+from scipy.optimize import minimize
+
+# Portfolio optimization with constraints
+n_assets = 5
+np.random.seed(42)
+mean_returns = np.random.rand(n_assets) * 0.02 + 0.05
+cov_matrix = np.random.rand(n_assets, n_assets) * 0.01
+cov_matrix = (cov_matrix + cov_matrix.T) / 2  # Make symmetric
+np.fill_diagonal(cov_matrix, np.random.rand(n_assets) * 0.02 + 0.01)
+
+# Initial weights
+w0 = np.ones(n_assets) / n_assets
 
 # Constraints
 constraints = [
-    {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}  # weights sum to 1
+    {'type': 'eq', 'fun': lambda w: np.sum(w) - 1},  # weights sum to 1
+    {'type': 'eq', 'fun': lambda w: np.dot(w, mean_returns) - 0.08}  # target return
 ]
 
-# Bounds (no short selling)
-bounds = tuple((0, 1) for _ in range(n_assets))
+# Bounds: no short selling (0 <= w_i <= 1)
+bounds = [(0, 1) for _ in range(n_assets)]
 
-# Optimize
+# Objective: minimize variance
+def portfolio_variance(w):
+    return w @ cov_matrix @ w
+
 result = minimize(
-    portfolio_return, initial_weights,
-    args=(mean_returns,),
+    portfolio_variance, w0,
     method='SLSQP',
     bounds=bounds,
     constraints=constraints
-)`,
+)
+
+print(f"Optimized weights: {result.x}")
+print(f"Expected return: {np.dot(result.x, mean_returns):.4f}")
+print(f"Portfolio variance: {result.fun:.6f}")
+print(f"Optimization success: {result.success}")`,
     videos: [
       { title: "Lagrange Multipliers Explained", query: "lagrange multipliers constrained optimization explained" },
-      { title: "KKT Conditions", query: "KKT conditions optimization" }
+      { title: "KKT Conditions", query: "KKT conditions optimization" },
+      { title: "Portfolio Optimization with Constraints", query: "mean variance optimization constraints scipy" }
     ],
     resources: [
-      { name: "Convex Optimization - Boyd & Vandenberghe", url: "https://web.stanford.edu/~boyd/cvxbook/" }
+      { name: "Convex Optimization - Boyd & Vandenberghe (Free)", url: "https://web.stanford.edu/~boyd/cvxbook/" },
+      { name: "scipy.optimize.minimize", url: "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html" }
     ]
   },
   "1-6": {
     title: "Probability Theory & Random Variables",
-    explanation: `<strong>Probability theory</strong> is the mathematical language of uncertainty. In quant finance, asset returns are modeled as random variables, enabling us to price derivatives, measure risk, and construct portfolios.</p>
-    <p>Key concepts include probability distributions, expectation, variance, and conditional probability.</p>`,
+    explanation: `<h2>What is a Random Variable?</h2>
+<p>A <strong>random variable</strong> X is a variable whose value is determined by a random outcome. It maps outcomes of an experiment to numbers.</p>
+
+<h3>Discrete vs Continuous</h3>
+<p><strong>Discrete</strong>: countable outcomes (e.g., number of trades per day: 0, 1, 2, ...)</p>
+<p><strong>Continuous</strong>: any value in a range (e.g., stock price: $50.00, $50.01, $50.005, ...)</p>
+
+<h3>Probability Mass Function (PMF) vs Probability Density Function (PDF)</h3>
+<p><strong>PMF</strong> (discrete): P(X = x) gives probability of exact outcome</p>
+<p><strong>PDF</strong> (continuous): f(x) where P(a ≤ X ≤ b) = ∫ₐᵇ f(x)dx. IMPORTANT: f(x) is NOT P(X=x) — that's always 0 for continuous!</p>
+
+<h3>Cumulative Distribution Function (CDF)</h3>
+<p>F(x) = P(X ≤ x) — probability that X is less than or equal to x. Always non-decreasing, ranges from 0 to 1.</p>
+
+<h3>Expected Value (Mean)</h3>
+<p>The long-run average if you repeated an experiment infinitely:</p>
+<pre>Discrete: E[X] = Σᵢ xᵢ × P(X = xᵢ)
+Continuous: E[X] = ∫ x × f(x) dx</pre>
+
+<h3>Variance and Standard Deviation</h3>
+<p>Measures spread around the mean:</p>
+<pre>Var(X) = E[(X - μ)²] = E[X²] - E[X]²
+StdDev(X) = √Var(X)</pre>
+
+<h3>Key Properties</h3>
+<ul>
+<li><strong>Linearity of expectation</strong>: E[aX + bY] = aE[X] + bE[Y] — ALWAYS true!</li>
+<li><strong>Variance is NOT linear</strong>: Var(aX) = a²Var(X)</li>
+<li><strong>Independent variables</strong>: E[XY] = E[X]E[Y] and Var(X+Y) = Var(X) + Var(Y)</li>
+</ul>
+
+<h3>Common Statistics</h3>
+<ul>
+<li><strong>Skewness</strong>: measure of asymmetry. Positive = right tail. Negative = left tail.</li>
+<li><strong>Kurtosis</strong>: measure of tail heaviness. Normal has kurtosis = 3 ("excess kurtosis" = 0).</li>
+<li><strong>Quantiles</strong>: the value x_α where P(X ≤ x_α) = α. Median is 50th percentile.</li>
+</ul>
+
+<h3>Financial Applications</h3>
+<ul>
+<li><strong>Asset returns</strong>: modeled as random variables with distributions</li>
+<li><strong>VaR</strong>: 5th percentile of returns — how much you might lose</li>
+<li><strong>Expected return</strong>: E[returns] — the mean</li>
+<li><strong>Risk</strong>: Var(returns) — variance or std dev</li>
+</ul>
+
+<h3>Joint Distributions</h3>
+<p>When we have multiple random variables, their joint distribution describes how they move together:</p>
+<pre>Joint CDF: F(x,y) = P(X ≤ x, Y ≤ y)
+Marginal: P(X) = ∫ P(X,Y) dY
+Conditional: P(X|Y) = P(X,Y) / P(Y)</pre>`,
     keyPoints: [
       "Random variables can be discrete (counts) or continuous (measurements)",
-      "PDF integrates to 1 over the entire domain",
-      "CDF gives P(X ≤ x) and is always non-decreasing",
-      "Expectation is linear: E[aX + bY] = aE[X] + bE[Y]",
-      "Variance is NOT linear: Var(aX) = a²Var(X)"
+      "PDF integrates to 1 over the entire domain: ∫ f(x)dx = 1",
+      "CDF gives P(X ≤ x) and is always non-decreasing, ranges 0 to 1",
+      "E[X²] - E[X]² = Var(X) — shortcut formula for variance",
+      "Variance is NOT linear: Var(aX) = a²Var(X), Var(X+Y) ≠ Var(X)+Var(Y) unless independent",
+      "Covariance and correlation measure how two variables move together"
     ],
     formula: `// Expectation (discrete)
-E[X] = Σ xᵢ P(X = xᵢ)
+E[X] = Σᵢ xᵢ P(X = xᵢ)
 
 // Expectation (continuous)
 E[X] = ∫ x f(x) dx
 
-// Variance
-Var(X) = E[(X - μ)²] = E[X²] - E[X]²
+// Variance (shortcut)
+Var(X) = E[X²] - E[X]²
+
+// Standard deviation
+σ = √Var(X)
 
 // Covariance
-Cov(X,Y) = E[(X - μₓ)(Y - μᵧ)]`,
+Cov(X,Y) = E[XY] - E[X]E[Y]
+
+// Correlation (normalized)
+ρ(X,Y) = Cov(X,Y) / (σ_X × σ_Y)`,
     python: `import numpy as np
 from scipy import stats
 
@@ -511,18 +814,35 @@ mean = np.mean(returns)
 std = np.std(returns)
 var_95 = np.percentile(returns, 5)  # VaR
 
-# Fit distribution to data
-mu, sigma = stats.norm.fit(returns)
+# Higher moments
 skewness = stats.skew(returns)
-kurtosis = stats.kurtosis(returns)`,
+kurtosis = stats.kurtosis(returns)  # Excess kurtosis (Normal = 0)
+
+# Distribution fitting
+mu, sigma = stats.norm.fit(returns)
+print(f"Fitted: μ={mu:.6f}, σ={sigma:.6f}")
+
+# Jarque-Bera test (normality)
+jb_stat, jb_pval = stats.jarque_bera(returns)
+print(f"JB stat: {jb_stat:.4f}, p-value: {jb_pval:.4f}")
+
+# Two-asset example
+returns_a = np.random.normal(0.001, 0.02, 252)
+returns_b = np.random.normal(0.0015, 0.025, 252)
+covariance = np.cov(returns_a, returns_b)[0,1]
+correlation = np.corrcoef(returns_a, returns_b)[0,1]
+print(f"Covariance: {covariance:.6f}, Correlation: {correlation:.4f}")`,
     videos: [
       { title: "Probability Theory Fundamentals", query: "probability theory random variables explained" },
-      { title: "Statistics for Finance", query: "statistics probability finance tutorial" }
+      { title: "Statistics for Finance", query: "statistics probability finance tutorial" },
+      { title: "Skewness and Kurtosis", query: "skewness kurtosis statistics finance" }
     ],
     resources: [
-      { name: "Introduction to Probability - Blitzstein & Hwang", url: "https://projects.iq.harvard.edu/stat110" }
+      { name: "Introduction to Probability - Blitzstein & Hwang", url: "https://projects.iq.harvard.edu/stat110" },
+      { name: "Khan Academy - Statistics", url: "https://www.khanacademy.org/math/statistics-probability" }
     ]
   },
+
   "1-7": {
     title: "Distributions: Normal, Poisson, Chi-squared",
     explanation: `<strong>Probability distributions</strong> describe how random variables behave. Different phenomena follow different distributions.</p>
@@ -1182,7 +1502,8 @@ print(greeks)`,
       { name: "Options, Futures, and Other Derivatives - Hull", url: "https://www.amazon.com/Options-Futures-Other-Derivatives-Hull/dp/013447208X" }
     ]
   },
-  // Add more learning materials for remaining topics...
+  // Phase 3 continued placeholder (will expand)
+  // Phase 4-7 placeholders (will expand)
 };
 
 // ═══════════════════════════════════════════════════════════════

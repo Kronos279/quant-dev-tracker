@@ -209,21 +209,17 @@ input[type=range]::-moz-range-thumb {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(11, 12, 16, 0.92);
+  background: var(--bg);
   z-index: 1000;
   overflow-y: auto;
-  padding: 20px;
 }
-.lm-modal.active { display: flex; }
+.lm-modal.active { display: block; }
 .lm-modal-content {
   width: 100%;
-  max-width: 800px;
-  margin: auto;
-  background: var(--bg1);
-  border: 1px solid var(--bd);
-  border-radius: 6px;
-  max-height: 90vh;
-  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--bg);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -231,16 +227,20 @@ input[type=range]::-moz-range-thumb {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: var(--bg2);
+  padding: 16px 24px;
+  background: var(--bg1);
   border-bottom: 1px solid var(--bd);
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .lm-modal-title {
   font-family: var(--fd);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--am);
+  flex: 1;
 }
 .lm-modal-close {
   background: none;
@@ -248,15 +248,91 @@ input[type=range]::-moz-range-thumb {
   color: var(--tx2);
   font-size: 24px;
   cursor: pointer;
-  padding: 0;
+  padding: 4px 8px;
   line-height: 1;
   transition: color .15s;
 }
 .lm-modal-close:hover { color: var(--tx); }
 .lm-modal-body {
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
   flex: 1;
+}
+
+/* Mobile full-screen modal - FULL SCREEN on mobile */
+@media (max-width: 600px) {
+  .lm-modal {
+    padding: 0;
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+  .lm-modal.active {
+    display: flex;
+    flex-direction: column;
+  }
+  .lm-modal-content {
+    min-height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .lm-modal-header {
+    padding: 14px 16px;
+    flex-shrink: 0;
+  }
+  .lm-modal-title {
+    font-size: 15px;
+    padding-right: 10px;
+  }
+  .lm-modal-close {
+    font-size: 20px;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+  .lm-modal-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet modal improvements */
+@media (min-width: 601px) and (max-width: 900px) {
+  .lm-modal-content {
+    max-width: 95vw;
+  }
+}
+
+/* Close button styling */
+.lm-modal-close {
+  background: var(--bg2);
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  color: var(--tx2);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 2px 8px;
+  line-height: 1.2;
+  transition: all .15s;
+}
+.lm-modal-close:hover {
+  background: var(--bg3);
+  color: var(--tx);
+}
+
+/* Modal scrollbar on mobile */
+.lm-modal-body::-webkit-scrollbar {
+  width: 4px;
+}
+.lm-modal-body::-webkit-scrollbar-thumb {
+  background: var(--bd2);
+  border-radius: 2px;
 }
 
 /* Learning Section Styles */
@@ -418,15 +494,83 @@ input[type=range]::-moz-range-thumb {
 }
 
 /* ── RESPONSIVE ── */
+
+/* Tablet (601px - 900px) */
 @media (max-width: 900px) {
   .main {
     grid-template-columns: 180px 1fr;
   }
   .rp { display: none; }
+  .hdr-logo { font-size: 16px; }
+  .hdr-sub { display: none; }
+  .tl { display: none; }
 }
+
+/* Phone (<=600px) */
 @media (max-width: 600px) {
   .main {
     grid-template-columns: 1fr;
   }
   .sb { display: none; }
+
+  /* Mobile header */
+  .hdr {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .hdr-logo { font-size: 15px; }
+  .hdr-sub { display: none; }
+  .hdr-mid { order: 3; flex-basis: 100%; }
+  .hdr-inf { font-size: 10px; }
+  .hdr-days { font-size: 28px; }
+  .tl { display: none; }
+
+  /* Topic grid single column */
+  .tgrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Detail panel adjustments */
+  .det-hd { padding: 12px 14px 9px; }
+  .det-ttl { font-size: 20px; }
+  .det-dsc { font-size: 13px; }
+  .topics-wrap { padding: 10px 14px; }
+  .prog-row { padding: 8px 14px; }
+
+  /* Milestone/ leverage full width */
+  .mile-sec { padding: 10px 14px 12px; }
+
+  /* Skills panel */
+  .rp-sec { padding: 10px 14px; }
+  .sk-nm { font-size: 12px; }
+}
+
+/* Small phone (<=400px) */
+@media (max-width: 400px) {
+  .hdr { padding: 8px 10px; }
+  .hdr-logo { font-size: 13px; }
+  .hdr-days { font-size: 24px; }
+  .hdr-inf { gap: 8px; font-size: 9px; }
+  .pc-nm { font-size: 13px; }
+  .ti { padding: 6px 8px; }
+  .ttx { font-size: 12px; }
+}
+
+/* Touch-friendly topic items for mobile */
+@media (max-width: 600px) {
+  .ti {
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+  .tcb {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+  }
+  .ti-book {
+    width: 20px;
+    height: 20px;
+  }
+  .ti-book svg { width: 16px; height: 16px; }
 }
