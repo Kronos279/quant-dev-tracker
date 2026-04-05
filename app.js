@@ -1587,3 +1587,10 @@ if (SUPABASE_URL && SUPABASE_KEY) {
 } else {
   updateConnectionStatus('offline');
 }
+
+// Expose functions to global scope for inline HTML handlers
+window.pick = pick;
+window.updP = updP;
+window.tTog = tTog;
+window.openLearningMaterial = openLearningMaterial;
+window.closeLearningModal = closeLearningModal;
