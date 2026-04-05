@@ -1564,7 +1564,7 @@ document.getElementById('lm-modal').addEventListener('click', function(e) {
 
 // Supabase configuration from environment variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://ekmleocmmjrovadtaeje.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrbWxlb2NtbWpyb3ZhZHRhZWplIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM5NTI2MywiZXhwIjoyMDkwOTcxMjYzfQ.aowPUwr1bPyjlcJzZ2YF-kkB-tTua4RsYfiu8HCylYg';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY 
 
 // Device ID for this browser
 const DEVICE_ID = localStorage.getItem('qdt-device-id') || (() => {
