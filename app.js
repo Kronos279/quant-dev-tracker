@@ -1356,9 +1356,6 @@ function pick(id) {
   aid = id;
   localStorage.setItem('qdt-aid', id);
   renderSB(); renderDet(); renderSK(); renderStats(); updHdr(); renderTL();
-  
-  // Sync to Supabase
-  saveActivePhaseToSupabase(id);
 }
 
 function updP(id, val) {
@@ -1367,9 +1364,6 @@ function updP(id, val) {
   const pvEl = document.getElementById('pv-'+id);
   if (pvEl) pvEl.textContent = val+'%';
   renderSB(); renderSK(); renderStats(); updHdr(); renderTL();
-  
-  // Sync to Supabase
-  savePhaseProgressToSupabase(id, val);
 }
 
 function tTog(pid, idx, el) {
@@ -1381,22 +1375,7 @@ function tTog(pid, idx, el) {
   const tcEl = document.getElementById('tc-'+pid);
   if (ccEl) ccEl.textContent = cc;
   if (tcEl) tcEl.textContent = `${cc}/${p.topics.length}`;
-  
-  // Auto-update progress bar based on checkbox completion
-  const newProgress = Math.round((cc / p.topics.length) * 100);
-  sP(pid, newProgress);
-  const pvEl = document.getElementById('pv-'+pid);
-  if (pvEl) {
-    pvEl.textContent = newProgress + '%';
-    pvEl.parentElement.querySelector('input').value = newProgress;
-  }
-  
-  renderSB(); renderSK(); renderStats(); updHdr(); renderTL();
-  
-  // Sync to Supabase
-  const isChecked = el.classList.contains('ck');
-  saveCheckboxToSupabase(pid, idx, isChecked);
-  savePhaseProgressToSupabase(pid, newProgress);
+  renderStats(); updHdr();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1559,144 +1538,12 @@ document.getElementById('lm-modal').addEventListener('click', function(e) {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// SUPABASE INTEGRATION
+// SUPABASE INTEGRATION (Prepared)
 // ═══════════════════════════════════════════════════════════════
 
-// Supabase configuration from environment variables
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://ekmleocmmjrovadtaeje.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY 
-
-// Device ID for this browser
-const DEVICE_ID = localStorage.getItem('qdt-device-id') || (() => {
-  const id = 'device_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem('qdt-device-id', id);
-  return id;
-})();
-
-// Supabase client instance
-let supabase = null;
-
-// Initialize Supabase client
-async function initSupabase() {
-  try {
-    // Dynamic import of Supabase client
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Test connection
-    const { data, error } = await supabase.from('user_progress').select('count').limit(1);
-    if (error) throw error;
-    
-    updateConnectionStatus('online');
-    console.log('[QDT] Supabase connected successfully');
-    return true;
-  } catch (error) {
-    console.warn('[QDT] Supabase connection failed, using localStorage only:', error.message);
-    updateConnectionStatus('offline');
-    return false;
-  }
-}
-
-// Save a single checkbox state to Supabase
-async function saveCheckboxToSupabase(pid, topicIndex, checked) {
-  if (!supabase) return false;
-  
-  try {
-    const key = `qdt-c-${pid}-${topicIndex}`;
-    const { error } = await supabase
-      .from('user_progress')
-      .upsert({
-        device_id: DEVICE_ID,
-        key: key,
-        value: checked ? '1' : '0',
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'device_id,key'
-      });
-    
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.warn('[QDT] Failed to save to Supabase:', error.message);
-    return false;
-  }
-}
-
-// Load all progress from Supabase for this device
-async function loadProgressFromSupabase() {
-  if (!supabase) return null;
-  
-  try {
-    const { data, error } = await supabase
-      .from('user_progress')
-      .select('key, value')
-      .eq('device_id', DEVICE_ID);
-    
-    if (error) throw error;
-    
-    // Apply loaded values to localStorage
-    if (data && data.length > 0) {
-      data.forEach(row => {
-        localStorage.setItem(row.key, row.value);
-      });
-      console.log('[QDT] Loaded', data.length, 'items from Supabase');
-    }
-    
-    return data;
-  } catch (error) {
-    console.warn('[QDT] Failed to load from Supabase:', error.message);
-    return null;
-  }
-}
-
-// Save phase progress to Supabase
-async function savePhaseProgressToSupabase(pid, progress) {
-  if (!supabase) return false;
-  
-  try {
-    const key = `qdt-p-${pid}`;
-    const { error } = await supabase
-      .from('user_progress')
-      .upsert({
-        device_id: DEVICE_ID,
-        key: key,
-        value: String(progress),
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'device_id,key'
-      });
-    
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.warn('[QDT] Failed to save phase progress to Supabase:', error.message);
-    return false;
-  }
-}
-
-// Save active phase to Supabase
-async function saveActivePhaseToSupabase(id) {
-  if (!supabase) return false;
-  
-  try {
-    const { error } = await supabase
-      .from('user_progress')
-      .upsert({
-        device_id: DEVICE_ID,
-        key: 'qdt-aid',
-        value: String(id),
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'device_id,key'
-      });
-    
-    if (error) throw error;
-    return true;
-  } catch (error) {
-    console.warn('[QDT] Failed to save active phase to Supabase:', error.message);
-    return false;
-  }
-}
+// Supabase configuration placeholder
+const SUPABASE_URL = localStorage.getItem('supabase-url') || '';
+const SUPABASE_KEY = localStorage.getItem('supabase-key') || '';
 
 function updateConnectionStatus(status) {
   const indicator = document.querySelector('.conn-indicator');
@@ -1706,49 +1553,37 @@ function updateConnectionStatus(status) {
 
   switch(status) {
     case 'online':
-      text.textContent = 'Synced';
+      text.textContent = 'Supabase Connected';
       break;
     case 'syncing':
       text.textContent = 'Syncing...';
       break;
     case 'offline':
-      text.textContent = 'Local Only';
+      text.textContent = 'Local Mode';
       break;
   }
 }
 
 // Initialize
-async function initializeApp() {
-  try {
-    console.log('[QDT] aid value:', aid);
-    console.log('[QDT] PH array length:', PH.length);
-    console.log('[QDT] PH phase IDs:', PH.map(p => p.id));
-    const foundPhase = PH.find(p=>p.id===aid);
-    console.log('[QDT] Found phase:', foundPhase ? foundPhase.sh : 'NOT FOUND');
-    
-    // Try to connect to Supabase and load progress
-    const connected = await initSupabase();
-    if (connected) {
-      updateConnectionStatus('syncing');
-      await loadProgressFromSupabase();
-    }
-    
-    setCountdown();
-    renderSB(); renderDet(); renderSK(); renderStats(); updHdr(); renderTL();
-    console.log('[QDT] Initialization complete');
-    
-    if (connected) {
-      updateConnectionStatus('online');
-    }
-    
-    // Add visible confirmation that JS ran
-    document.getElementById('hdr-pct').textContent = 'JS OK';
-  } catch(e) {
-    console.error('[QDT] Error during initialization:', e);
-    document.getElementById('hdr-pct').textContent = 'JS ERR';
-    updateConnectionStatus('offline');
-  }
+try {
+  console.log('[QDT] aid value:', aid);
+  console.log('[QDT] PH array length:', PH.length);
+  console.log('[QDT] PH phase IDs:', PH.map(p => p.id));
+  const foundPhase = PH.find(p=>p.id===aid);
+  console.log('[QDT] Found phase:', foundPhase ? foundPhase.sh : 'NOT FOUND');
+  setCountdown();
+  renderSB(); renderDet(); renderSK(); renderStats(); updHdr(); renderTL();
+  console.log('[QDT] Initialization complete');
+  // Add visible confirmation that JS ran
+  document.getElementById('hdr-pct').textContent = 'JS OK';
+} catch(e) {
+  console.error('[QDT] Error during initialization:', e);
+  document.getElementById('hdr-pct').textContent = 'JS ERR';
 }
 
-// Start the app
-initializeApp();
+// Check Supabase configuration
+if (SUPABASE_URL && SUPABASE_KEY) {
+  updateConnectionStatus('online');
+} else {
+  updateConnectionStatus('offline');
+}
